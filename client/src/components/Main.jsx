@@ -16,6 +16,11 @@ const Main = () => {
     setValue({ ...value, [name]: value });
   };
 
+  const handleClick = (e) => {
+    const isDisabled = Object.value(value).some((v) => !v);
+    if (isDisabled) e.preventDefault();
+  };
+
   return (
     <div className={styles.wrap}>
       <div className={styles.container}>
@@ -47,7 +52,11 @@ const Main = () => {
           />
         </div>
 
-        <Link to={`/chat?name=${value[USERNAME]}&room=${value[ROOM]}`}>
+        <Link
+          className={styles.group}
+          onClick={handleClick}
+          to={`/chat?name=${value[USERNAME]}&room=${value[ROOM]}`}
+        >
           <button type="submit" className={styles.button}>
             Sign in
           </button>

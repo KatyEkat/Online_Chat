@@ -9,11 +9,10 @@ const findUser = (user) => {
   return users.find(
     (u) => trimStr(u.name) === userName && trimStr(u.room) === userRoom
   );
-}
+};
 
 const addUser = (user) => {
-
-  const isExist = findUser(user)
+  const isExist = findUser(user);
 
   !isExist && users.push(user);
 
@@ -22,4 +21,8 @@ const addUser = (user) => {
   return { isExist: !!isExist, user: currentUser };
 };
 
-module.exports = { addUser };
+const getRoomUsers = (room) => {
+  return users.filter((u) => u.room === room);
+};
+
+module.exports = { addUser, findUser, getRoomUsers };

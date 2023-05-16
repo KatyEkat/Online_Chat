@@ -13,7 +13,7 @@ export const Messages = ({ messages, name }) => {
           <div key={i} className={`${styles.message} ${className}`}>
             <span className={styles.user}>{user.name}</span>
 
-            <div className={styles.messages}>{message}</div>
+            <div className={styles.text}>{message}</div>
           </div>
         );
       })}

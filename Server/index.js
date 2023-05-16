@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
       data: { users: getRoomUsers(user.room) },
     });
 
-    io.to(user.room).emit("joinRoom", {
+    io.to(user.room).emit("room", {
       data: { room: user.room, users: getRoomUsers(user.room) },
     });
   });
@@ -51,6 +51,23 @@ io.on("connection", (socket) => {
 
     if (user) {
       io.to(user.room).emit("message", { data: { user, message } });
+    }
+  });
+
+  socket.on("leftRoom", ({ params }) => {
+    const user = removeUser(params);
+
+    if (user) {
+      const { room, name } = user;
+
+      io.to(room).emit("message", {
+        data: { user: { name: "Admin" }, message: `${name} has left` },
+      });
+
+      io.to(user.room).emit("room", {
+        data: { users: getRoomUsers(room) },
+      });
+
     }
   });
 

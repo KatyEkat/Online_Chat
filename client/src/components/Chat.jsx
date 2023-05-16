@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "../styles/Chat.module.css";
 import io from "socket.io-client";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import icon from "../img/emoji.svg";
 import EmojiPicker from "emoji-picker-react";
 import { Messages } from "./Messages";
@@ -11,6 +11,8 @@ const socket = io.connect("http://localhost:5000");
 
 const Chat = () => {
   const { search } = useLocation();
+
+  const navigate = useNavigate();
 
   const [params, setParams] = useState({ room: "", user: "" });
   const [state, setState] = useState([]);
@@ -31,12 +33,15 @@ const Chat = () => {
   }, []);
 
   useEffect(() => {
-    socket.on("joinRoom", ({ data: {users} }) => {
+    socket.on("room", ({ data: { users } }) => {
       setUsers(users.length);
     });
   }, []);
 
-  const leftRoom = () => {};
+  const leftRoom = () => {
+    socket.emit("leftRoom", { params });
+    navigate("/");
+  };
 
   const handleChange = ({ target: { value } }) => setMessage(value);
 
@@ -62,11 +67,7 @@ const Chat = () => {
 
       <Messages messages={state} name={params.name} />
 
-      <div className={styles.messages}>
-        {/* {state.map(({ message }, i) => (
-          <span key={i}> {message} </span>
-        ))} */}
-      </div>
+      <div className={styles.messages}></div>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.input}>

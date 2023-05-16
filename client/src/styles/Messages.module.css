@@ -1,0 +1,49 @@
+.messages {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.message {
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  row-gap: 5px;
+  width: 100%;
+}
+
+.text {
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #fff;
+}
+
+.user {
+  font-size: 14px;
+  color: rgb(176, 176, 176);
+}
+
+.user {
+  align-items: flex-start;
+}
+
+.user .text {
+  background: #514c4c;
+}
+
+.user .user {
+  padding-left: 10px;
+}
+
+.me {
+  align-items: flex-end;
+}
+
+.me .text {
+  background: #0d49d7;
+}
+
+.me .user {
+  padding-right: 10px;
+}

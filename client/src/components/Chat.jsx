@@ -2,19 +2,23 @@ import React, { useState } from "react";
 import styles from "../styles/Chat.module.css";
 import io from "socket.io-client";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import icon from "../img/emoji.svg";
 import EmojiPicker from "emoji-picker-react";
+import { Messages } from "./Messages";
 
 const socket = io.connect("http://localhost:5000");
 
 const Chat = () => {
   const { search } = useLocation();
 
+  const navigate = useNavigate();
+
   const [params, setParams] = useState({ room: "", user: "" });
   const [state, setState] = useState([]);
   const [message, setMessage] = useState();
   const [isOpen, setOpen] = useState(false);
+  const [users, setUsers] = useState(0);
 
   useEffect(() => {
     const searchParams = Object.fromEntries(new URLSearchParams(search));
@@ -25,32 +29,47 @@ const Chat = () => {
   useEffect(() => {
     socket.on("message", ({ data }) => {
       setState((_state) => [..._state, data]);
-      console.log(data);
     });
   }, []);
 
-  const leftRoom = () => {};
-  const handleChange = () => {};
-  const handleSubmit = () => {};
-  const onEmojiClick = () => setOpen(!isOpen);
+  useEffect(() => {
+    socket.on("room", ({ data: { users } }) => {
+      setUsers(users.length);
+    });
+  }, []);
+
+  const leftRoom = () => {
+    socket.emit("leftRoom", { params });
+    navigate("/");
+  };
+
+  const handleChange = ({ target: { value } }) => setMessage(value);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!message) return;
+
+    socket.emit("sendMessage", { message, params });
+
+    setMessage("");
+  };
+  const onEmojiClick = ({ emoji }) => setMessage(`${message} ${emoji}`);
 
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
         <div className={styles.title}> {params.room} </div>
-        <div className={styles.users}> 0 users in this room </div>
+        <div className={styles.users}> {users} users in this room </div>
         <button className={styles.left} onClick={leftRoom}>
           Left the room
         </button>
       </div>
 
       <div className={styles.messages}>
-        {state.map(({ message }, i) => (
-          <span key={i}> {message} </span>
-        ))}
+        <Messages messages={state} name={params.name} />
       </div>
 
-      <form className={styles.form}>
+      <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.input}>
           <input
             type="text"
@@ -64,7 +83,7 @@ const Chat = () => {
         </div>
 
         <div className={styles.emoji}>
-          <img src="icon" alt="emoji" />
+          <img src={icon} alt="emoji" onClick={() => setOpen(!isOpen)} />
 
           {isOpen && (
             <div className={styles.emojies}>

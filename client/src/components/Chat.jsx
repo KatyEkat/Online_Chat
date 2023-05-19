@@ -65,9 +65,9 @@ const Chat = () => {
         </button>
       </div>
 
-      <Messages messages={state} name={params.name} />
-
-      <div className={styles.messages}></div>
+      <div className={styles.messages}>
+        <Messages messages={state} name={params.name} />
+      </div>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.input}>
